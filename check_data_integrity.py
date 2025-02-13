@@ -3,7 +3,7 @@ import os
 from collections import Counter
 
 # Directory containing extracted JSON data
-DATA_DIR = "wordpress_data_v2"
+DATA_DIR = "wordpress_data"
 
 def load_json(filename):
     """Load JSON data from a file."""

@@ -43,6 +43,34 @@ def save_json(data, filename):
     with open(os.path.join(DATA_DIR, filename), "w", encoding="utf-8") as file:
         json.dump(data, file, indent=4, ensure_ascii=False)
 
+def extract_seo_data(item):
+    """
+    Extracts relevant SEO metadata from a post or page.
+    """
+    seo = item.get("yoast_head_json", {})
+
+    # Handle og_image field, which might be a list
+    og_image = seo.get("og_image", [])
+    if isinstance(og_image, list) and len(og_image) > 0:
+        og_image_url = og_image[0].get("url", "")
+    elif isinstance(og_image, dict):
+        og_image_url = og_image.get("url", "")
+    else:
+        og_image_url = ""
+
+    return {
+        "post_id": item["id"],
+        "slug": item["slug"],
+        "title": seo.get("title", item["title"]["rendered"]),
+        "meta_description": seo.get("description", ""),
+        "canonical_url": seo.get("canonical", ""),
+        "og_title": seo.get("og_title", ""),
+        "og_description": seo.get("og_description", ""),
+        "og_image": og_image_url,
+        "twitter_card": seo.get("twitter_card", ""),
+        "schema": seo.get("schema", {})
+    }
+
 
 def fetch_and_save():
     """
@@ -56,8 +84,8 @@ def fetch_and_save():
     pages = fetch_data("pages")
     save_json(pages, "pages.json")
 
-    print("Fetching SEO data (if using Yoast SEO)...")
-    seo_data = fetch_data("yoast_indexable")  # Yoast SEO
+    print("Extracting SEO data from posts and pages...")
+    seo_data = [extract_seo_data(post) for post in posts] + [extract_seo_data(page) for page in pages]
     save_json(seo_data, "seo_data.json")
 
     print("Fetching categories...")

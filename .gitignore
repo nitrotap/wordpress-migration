@@ -24,6 +24,7 @@
 .vscode
 node_modules
 *.env.local
+*.env
 
 
 # Configuration
