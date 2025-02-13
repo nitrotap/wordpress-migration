@@ -1,0 +1,29 @@
+CREATE TABLE posts (
+    id SERIAL PRIMARY KEY,
+    wp_id INT UNIQUE NOT NULL,
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    slug TEXT UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE pages (
+    id SERIAL PRIMARY KEY,
+    wp_id INT UNIQUE NOT NULL,
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    slug TEXT UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE seo_metadata (
+    id SERIAL PRIMARY KEY,
+    wp_id INT UNIQUE NOT NULL,
+    post_type TEXT NOT NULL,
+    meta_title TEXT,
+    meta_description TEXT,
+    focus_keyword TEXT,
+    canonical_url TEXT
+);

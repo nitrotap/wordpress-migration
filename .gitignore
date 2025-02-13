@@ -17,6 +17,15 @@
 /wp-*.php
 /xmlrpc.php
 
+# User Defined
+*_data*/
+.DS_Store
+.idea
+.vscode
+node_modules
+*.env.local
+
+
 # Configuration
 wp-config.php
 

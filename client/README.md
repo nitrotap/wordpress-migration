@@ -1,6 +1,39 @@
-# WordPress Migration
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-With all the drama around WordPress, I wanted to give back to the community by preparing this WordPress migration guide - moving WordPress data into Next.js with React - using Neon Postgres.
+## Getting Started
+
+First, run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 Let's begin with **Step 1: Extracting Data from the WordPress REST API** using Python.
 
@@ -435,9 +468,7 @@ Now that we have migrated the WordPress data into **PostgreSQL**, let's integrat
 ---
 
 ## **Step 3: Setting Up Next.js with App Router & TypeScript**
-
 We'll:
-
 1. **Initialize a Next.js project with TypeScript**.
 2. **Set up a database connection to Vercel Postgres**.
 3. **Create API routes to fetch data**.
@@ -446,16 +477,12 @@ We'll:
 ---
 
 ### **3.1 Initialize Next.js with TypeScript**
-
 Run the following command to create a Next.js project:
-
 ```bash
 npx create-next-app@latest wordpress-migration --typescript --experimental-app
 cd wordpress-migration
 ```
-
 Then install **PostgreSQL client**:
-
 ```bash
 npm install pg
 ```
@@ -463,9 +490,7 @@ npm install pg
 ---
 
 ### **3.2 Configure Environment Variables**
-
 Create a **`.env.local`** file and add the database connection:
-
 ```
 DATABASE_URL=postgres://neondb_owner:npg_DX8uEYZW4NHs@ep-muddy-mountain-a68kkmha-pooler.us-west-2.aws.neon.tech/neondb?sslmode=require
 ```
@@ -473,9 +498,7 @@ DATABASE_URL=postgres://neondb_owner:npg_DX8uEYZW4NHs@ep-muddy-mountain-a68kkmha
 ---
 
 ### **3.3 Create Database Connection**
-
 Inside **`lib/db.ts`**, create a helper to connect to PostgreSQL:
-
 ```typescript
 import { Pool } from "pg";
 
@@ -497,13 +520,10 @@ export async function query(text: string, params?: any[]) {
 ---
 
 ### **3.4 Create API Routes**
-
 Now, let's create **API routes** to fetch posts, pages, and SEO data.
 
 #### **Get Posts API**
-
 Create a file **`app/api/posts/route.ts`**:
-
 ```typescript
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
@@ -513,10 +533,7 @@ export async function GET() {
     const posts = await query("SELECT * FROM posts ORDER BY created_at DESC");
     return NextResponse.json(posts);
   } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to fetch posts" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to fetch posts" }, { status: 500 });
   }
 }
 ```
@@ -524,9 +541,7 @@ export async function GET() {
 ---
 
 #### **Get Pages API**
-
 Create **`app/api/pages/route.ts`**:
-
 ```typescript
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
@@ -536,10 +551,7 @@ export async function GET() {
     const pages = await query("SELECT * FROM pages ORDER BY created_at DESC");
     return NextResponse.json(pages);
   } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to fetch pages" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to fetch pages" }, { status: 500 });
   }
 }
 ```
@@ -547,24 +559,17 @@ export async function GET() {
 ---
 
 #### **Get SEO Data API**
-
 Create **`app/api/seo/route.ts`**:
-
 ```typescript
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
 
 export async function GET() {
   try {
-    const seoData = await query(
-      "SELECT * FROM posts WHERE seo_title IS NOT NULL ORDER BY created_at DESC"
-    );
+    const seoData = await query("SELECT * FROM posts WHERE seo_title IS NOT NULL ORDER BY created_at DESC");
     return NextResponse.json(seoData);
   } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to fetch SEO data" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to fetch SEO data" }, { status: 500 });
   }
 }
 ```
@@ -572,13 +577,10 @@ export async function GET() {
 ---
 
 ### **3.5 Create React Components for Displaying Data**
-
 Now, let's create components to display **posts** and **pages**.
 
 #### **Post List Component**
-
 Create **`components/PostList.tsx`**:
-
 ```tsx
 "use client";
 
@@ -606,9 +608,7 @@ export default function PostList() {
       {posts.map((post) => (
         <article key={post.id} className="border p-4 my-2 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold">{post.title}</h2>
-          <p className="text-gray-600">
-            {new Date(post.created_at).toLocaleDateString()}
-          </p>
+          <p className="text-gray-600">{new Date(post.created_at).toLocaleDateString()}</p>
           <div dangerouslySetInnerHTML={{ __html: post.content }} />
         </article>
       ))}
@@ -620,9 +620,7 @@ export default function PostList() {
 ---
 
 #### **Page List Component**
-
 Create **`components/PageList.tsx`**:
-
 ```tsx
 "use client";
 
@@ -650,9 +648,7 @@ export default function PageList() {
       {pages.map((page) => (
         <article key={page.id} className="border p-4 my-2 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold">{page.title}</h2>
-          <p className="text-gray-600">
-            {new Date(page.created_at).toLocaleDateString()}
-          </p>
+          <p className="text-gray-600">{new Date(page.created_at).toLocaleDateString()}</p>
           <div dangerouslySetInnerHTML={{ __html: page.content }} />
         </article>
       ))}
@@ -664,9 +660,7 @@ export default function PageList() {
 ---
 
 ### **3.6 Display Posts and Pages in Next.js**
-
 Modify **`app/page.tsx`** to show the components:
-
 ```tsx
 import PostList from "@/components/PostList";
 import PageList from "@/components/PageList";
@@ -685,9 +679,7 @@ export default function Home() {
 ---
 
 ### **3.7 Deploy to Vercel**
-
 To deploy, run:
-
 ```bash
 vercel
 ```
@@ -697,7 +689,6 @@ Ensure you **add environment variables** (`DATABASE_URL`) in Vercel.
 ---
 
 ## **Next Steps**
-
 1. **Enhance SEO Handling**: Use `next-seo` to dynamically inject metadata.
 2. **Improve Image Handling**: Upload media to Cloudinary or Vercel Blob Storage.
 3. **Add a Search Feature**: Implement full-text search with PostgreSQL.
@@ -706,9 +697,10 @@ Ensure you **add environment variables** (`DATABASE_URL`) in Vercel.
 ---
 
 ### ✅ **Migration Summary**
-
 ✔ Pulled **WordPress data** →  
 ✔ Transformed & Inserted into **PostgreSQL** →  
 ✔ Created **Next.js API Routes** →  
 ✔ Built **React Components** to display posts/pages →  
-✔ **Deployed to Vercel** 🚀
+✔ **Deployed to Vercel** 🚀  
+
+
