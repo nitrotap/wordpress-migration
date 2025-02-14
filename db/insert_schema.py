@@ -9,6 +9,7 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 # Path to schema file
 SCHEMA_FILE = "schema.sql"
 
+
 def execute_schema():
     """Reads and executes the schema.sql file in the Neon PostgreSQL database."""
     try:
@@ -31,6 +32,7 @@ def execute_schema():
         cursor.close()
         conn.close()
         print("Database connection closed.")
+
 
 if __name__ == "__main__":
     execute_schema()

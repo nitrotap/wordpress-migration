@@ -43,6 +43,7 @@ def save_json(data, filename):
     with open(os.path.join(DATA_DIR, filename), "w", encoding="utf-8") as file:
         json.dump(data, file, indent=4, ensure_ascii=False)
 
+
 def extract_seo_data(item):
     """
     Extracts relevant SEO metadata from a post or page.
@@ -68,7 +69,7 @@ def extract_seo_data(item):
         "og_description": seo.get("og_description", ""),
         "og_image": og_image_url,
         "twitter_card": seo.get("twitter_card", ""),
-        "schema": seo.get("schema", {})
+        "schema": seo.get("schema", {}),
     }
 
 
@@ -85,7 +86,9 @@ def fetch_and_save():
     save_json(pages, "pages.json")
 
     print("Extracting SEO data from posts and pages...")
-    seo_data = [extract_seo_data(post) for post in posts] + [extract_seo_data(page) for page in pages]
+    seo_data = [extract_seo_data(post) for post in posts] + [
+        extract_seo_data(page) for page in pages
+    ]
     save_json(seo_data, "seo_data.json")
 
     print("Fetching categories...")

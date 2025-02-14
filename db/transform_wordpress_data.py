@@ -22,6 +22,7 @@ def escape(value):
         return "NULL"
     return "'" + value.replace("'", "''") + "'"
 
+
 def transform_posts(posts):
     """Convert posts JSON to SQL INSERT statements."""
     sql_statements = []
@@ -41,7 +42,7 @@ def transform_posts(posts):
         ) ON CONFLICT (wp_id) DO NOTHING;
         """
         sql_statements.append(sql.strip())
-    
+
     return sql_statements
 
 
@@ -49,8 +50,10 @@ def transform_seo(seo_data, existing_post_ids):
     """Convert SEO metadata JSON to SQL INSERT statements only for existing posts."""
     sql_statements = []
     for item in seo_data:
-        if item['post_id'] not in existing_post_ids:
-            print(f"Skipping SEO data for missing post_id: {item['post_id']}")  # Debugging output
+        if item["post_id"] not in existing_post_ids:
+            print(
+                f"Skipping SEO data for missing post_id: {item['post_id']}"
+            )  # Debugging output
             continue  # Skip inserting SEO data for posts that do not exist
 
         sql = f"""
@@ -79,7 +82,6 @@ def transform_seo(seo_data, existing_post_ids):
         sql_statements.append(sql.strip())
 
     return sql_statements
-
 
 
 def transform_categories(categories):
@@ -121,7 +123,7 @@ def transform_media(media, existing_post_ids):
     """Convert media JSON to SQL INSERT statements, ensuring referenced post exists."""
     sql_statements = []
     for item in media:
-        post_id = item.get('post', None)
+        post_id = item.get("post", None)
 
         # If post_id exists but is not in the database, skip it
         if post_id and post_id not in existing_post_ids:
@@ -144,7 +146,6 @@ def transform_media(media, existing_post_ids):
         sql_statements.append(sql.strip())
 
     return sql_statements
-
 
 
 def transform_authors(authors):
@@ -226,6 +227,8 @@ def save_sql(statements, filename):
     with open(os.path.join(OUTPUT_DIR, filename), "w", encoding="utf-8") as file:
         file.write("\n".join(statements))
     print(f"Saved SQL to {filename}")
+
+
 def main():
     print("Loading WordPress data...")
     posts = load_json("posts.json")
@@ -242,7 +245,7 @@ def main():
     post_sql = transform_posts(posts)
 
     # Fetch existing post IDs before inserting SEO data and media
-    existing_post_ids = {post['id'] for post in posts}  # Extract all post wp_ids
+    existing_post_ids = {post["id"] for post in posts}  # Extract all post wp_ids
 
     seo_sql = transform_seo(seo_data, existing_post_ids)  # Pass existing_post_ids
     media_sql = transform_media(media, existing_post_ids)  # Pass existing_post_ids

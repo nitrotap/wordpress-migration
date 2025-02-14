@@ -9,6 +9,7 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 # Directory where SQL files are stored
 SQL_DIR = "sql_data"
 
+
 def execute_sql_file(cursor, filename):
     """Reads and executes SQL from a file with error handling."""
     filepath = os.path.join(SQL_DIR, filename)
@@ -22,6 +23,7 @@ def execute_sql_file(cursor, filename):
             sql_statements = file.read()
             cursor.execute(sql_statements)
         print(f"✅ Successfully inserted data from {filename}")
+        print(len(sql_statements.split(";")) - 1, "SQL statements executed")
         return True
 
     except psycopg2.IntegrityError as e:
@@ -39,6 +41,7 @@ def execute_sql_file(cursor, filename):
 
     return False
 
+
 def insert_data():
     """Connect to PostgreSQL and insert data into tables with error handling."""
     try:
@@ -46,17 +49,22 @@ def insert_data():
         conn = psycopg2.connect(DATABASE_URL)
         cursor = conn.cursor()
 
+        # Test connection with a simple query
+        cursor.execute("SELECT 1")
+        print("✅ Connection test successful")
+
         # List of SQL files in order of dependency
         sql_files = [
             "authors.sql",
             "posts.sql",
+            "pages.sql",
             "categories.sql",
             "tags.sql",
             "seo_data.sql",  # Enable this once posts are verified
             "media.sql",
             "comments.sql",
             "custom_fields.sql",
-            "redirects.sql"
+            "redirects.sql",
         ]
 
         success_count = 0
@@ -67,11 +75,9 @@ def insert_data():
             success = execute_sql_file(cursor, sql_file)
             if success:
                 success_count += 1
+                conn.commit()  # Commit after each successful file
             else:
                 failed_files.append(sql_file)
-
-        # Commit successful inserts
-        conn.commit()
 
         print("\n✅ Data insertion complete!")
         print(f"✅ Successfully inserted: {success_count} files")
@@ -88,6 +94,7 @@ def insert_data():
         cursor.close()
         conn.close()
         print("\n🔌 Database connection closed.")
+
 
 if __name__ == "__main__":
     insert_data()
